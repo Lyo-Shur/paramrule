@@ -34,8 +34,8 @@ class Required(Rule):
     def check(self, expr, dic, name):
         b = name in dic
         if not b:
-            return False, name + " Field cannot be empty"
-        return True, "success"
+            return False
+        return True
 
 
 # Empty calibration
@@ -46,8 +46,8 @@ class Ban(Rule):
     def check(self, expr, dic, name):
         b = name in dic
         if b:
-            return False, name + " Parameter is disabled"
-        return True, "success"
+            return False
+        return True
 
 
 # String length verification
@@ -59,16 +59,16 @@ class Length(Rule):
 
     def check(self, expr, dic, name):
         if name not in dic:
-            return True, "success"
+            return True
         value = dic[name]
         b = isinstance(value, str)
         if not b:
-            return False, name + " error in type"
+            return False
         length = len(value)
         minmax = expr[len(self.expr) + 1:len(expr) - 1].split("-")
         if length < int(minmax[0]) or length > int(minmax[1]):
-            return False, name + " Illegal field length"
-        return True, "success"
+            return False
+        return True
 
 
 # Digital range verification
@@ -80,18 +80,18 @@ class Range(Rule):
 
     def check(self, expr, dic, name):
         if name not in dic:
-            return True, "success"
+            return True
         value = dic[name]
         try:
             value = int(value)
             dic[name] = value
         except Exception as e:
             print(e)
-            return False, name + " error in type"
+            return False
         minmax = expr[len(self.expr) + 1:len(expr) - 1].split("-")
         if value < int(minmax[0]) or value > int(minmax[1]):
-            return False, name + " Illegal field range"
-        return True, "success"
+            return False
+        return True
 
 
 # Time check
@@ -103,7 +103,7 @@ class DateTime(Rule):
 
     def check(self, expr, dic, name):
         if name not in dic:
-            return True, "success"
+            return True
         value = dic[name]
         pattern = expr[len(self.expr) + 1:len(expr) - 1]
         try:
@@ -111,8 +111,8 @@ class DateTime(Rule):
             dic[name] = value
         except Exception as e:
             print(e)
-            return False, name + " error in type"
-        return True, "success"
+            return False
+        return True
 
 
 # Regular match check
@@ -124,13 +124,13 @@ class Regexp(Rule):
 
     def check(self, expr, dic, name):
         if name not in dic:
-            return True, "success"
+            return True
         value = dic[name]
         pattern = expr[len(self.expr) + 1:len(expr) - 1]
         search = re.search(pattern, value)
         if search is None:
-            return False, name + " Illegal field format"
+            return False
         start_end = search.span()
         if (start_end[1] - start_end[0]) != len(value):
-            return False, name + " Illegal field format"
-        return True, "success"
+            return False
+        return True
