@@ -15,13 +15,12 @@ class Rule:
         """
         pass
 
-    def check(self, dic, expr, name, value):
+    def check(self, expr, dic, name):
         """
         Verify expression and corresponding value
-        :param dic: Original dictionary
         :param expr: Rule expression
+        :param dic: Original dictionary
         :param name: Parameter name
-        :param value: Value to be verified
         :return: Verification results
         """
         pass
@@ -32,14 +31,23 @@ class Required(Rule):
     def know(self, expr):
         return "required" == expr
 
-    def check(self, dic, expr, name, value):
-        b = isinstance(value, str)
+    def check(self, expr, dic, name):
+        b = name in dic
         if not b:
-            return b, name + " error in type"
-        b = (value != "")
-        if not b:
-            return b, name + " Field cannot be empty"
-        return b, "success"
+            return False, name + " Field cannot be empty"
+        return True, "success"
+
+
+# Empty calibration
+class Ban(Rule):
+    def know(self, expr):
+        return "ban" == expr
+
+    def check(self, expr, dic, name):
+        b = name in dic
+        if b:
+            return False, name + " Parameter is disabled"
+        return True, "success"
 
 
 # String length verification
@@ -49,10 +57,13 @@ class Length(Rule):
     def know(self, expr):
         return expr.startswith(self.expr)
 
-    def check(self, dic, expr, name, value):
+    def check(self, expr, dic, name):
+        if name not in dic:
+            return True, "success"
+        value = dic[name]
         b = isinstance(value, str)
         if not b:
-            return b, name + " error in type"
+            return False, name + " error in type"
         length = len(value)
         minmax = expr[len(self.expr) + 1:len(expr) - 1].split("-")
         if length < int(minmax[0]) or length > int(minmax[1]):
@@ -67,7 +78,10 @@ class Range(Rule):
     def know(self, expr):
         return expr.startswith(self.expr)
 
-    def check(self, dic, expr, name, value):
+    def check(self, expr, dic, name):
+        if name not in dic:
+            return True, "success"
+        value = dic[name]
         try:
             value = int(value)
             dic[name] = value
@@ -87,7 +101,10 @@ class DateTime(Rule):
     def know(self, expr):
         return expr.startswith(self.expr)
 
-    def check(self, dic, expr, name, value):
+    def check(self, expr, dic, name):
+        if name not in dic:
+            return True, "success"
+        value = dic[name]
         pattern = expr[len(self.expr) + 1:len(expr) - 1]
         try:
             value = datetime.datetime.strptime(value, pattern)
@@ -105,7 +122,10 @@ class Regexp(Rule):
     def know(self, expr):
         return expr.startswith(self.expr)
 
-    def check(self, dic, expr, name, value):
+    def check(self, expr, dic, name):
+        if name not in dic:
+            return True, "success"
+        value = dic[name]
         pattern = expr[len(self.expr) + 1:len(expr) - 1]
         search = re.search(pattern, value)
         if search is None:

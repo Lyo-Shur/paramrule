@@ -11,7 +11,7 @@ class Helper:
     # Check configuration
     _configs = None
     # Built in verification rules
-    _rules = [Required(), Length(), Range(), DateTime(), Regexp()]
+    _rules = [Required(), Ban(), Length(), Range(), DateTime(), Regexp()]
 
     def __init__(self, dict_parameter, configs):
         """
@@ -22,49 +22,27 @@ class Helper:
         self._dict_parameter = dict_parameter
         self._configs = configs
 
-    def weak_check(self):
-        """
-        Weak check, skip when parameter does not exist
-        :return: Verification result
-        """
-        for config in self._configs.items():
-            name = config[0]
-            expr = config[1]
-            if name not in self._dict_parameter:
-                continue
-            # Rule matching flag bit
-            flag = False
-            for rule in self._rules:
-                if rule.know(expr):
-                    flag = True
-                    b, message = rule.check(self._dict_parameter, expr, name, self._dict_parameter[name])
-                    if not b:
-                        return b, message
-                    break
-            if not flag:
-                return False, "Validation rule does not exist"
-        return True, "success"
-
     def check(self):
         """
-        Strong check. When the parameter does not exist, a check error is returned
+        Verify parameters
         :return: Verification result
         """
         for config in self._configs.items():
             name = config[0]
-            expr = config[1]
-            if name not in self._dict_parameter:
-                return False, name + " Parameter does not exist"
+            # Split expression
+            exprs = config[1].split(";")
+
             # Rule matching flag bit
             flag = False
-            for rule in self._rules:
-                if rule.know(expr):
+            for expr in exprs:
+                for rule in self._rules:
+                    if not rule.know(expr):
+                        continue
                     flag = True
-                    b, message = rule.check(self._dict_parameter, expr, name, self._dict_parameter[name])
+                    b, message = rule.check(expr, self._dict_parameter, name)
                     if not b:
                         return b, message
                     break
-
             if not flag:
                 return False, "Validation rule does not exist"
         return True, "success"
