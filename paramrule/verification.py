@@ -1,4 +1,5 @@
 from string import Template
+from typing import Tuple
 
 from paramrule.rule import *
 
@@ -15,7 +16,7 @@ class Helper:
     # Built in verification rules
     _rules = [Required(), Ban(), Length(), Range(), DateTime(), Regexp()]
 
-    def __init__(self, dict_parameter, configs):
+    def __init__(self, dict_parameter: dict, configs: dict):
         """
         Initialize verification help tool class
         :param dict_parameter: Parameter dictionary
@@ -31,7 +32,7 @@ class Helper:
                     cfg.append({"rule": expr})
                 self._configs[key] = cfg
 
-    def check(self):
+    def check(self) -> Tuple[bool, str]:
         """
         Verify parameters
         :return: Verification result

@@ -7,7 +7,7 @@ class Rule:
     Validation rule abstract class
     """
 
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         """
         Identification verification rules
         :param expr: Rule expression
@@ -15,7 +15,7 @@ class Rule:
         """
         pass
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         """
         Verify expression and corresponding value
         :param expr: Rule expression
@@ -28,10 +28,10 @@ class Rule:
 
 # Non empty calibration
 class Required(Rule):
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         return "required" == expr
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         b = name in dic
         if not b:
             return False
@@ -40,10 +40,10 @@ class Required(Rule):
 
 # Empty calibration
 class Ban(Rule):
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         return "ban" == expr
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         b = name in dic
         if b:
             return False
@@ -54,10 +54,10 @@ class Ban(Rule):
 class Length(Rule):
     expr = "length"
 
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         return expr.startswith(self.expr)
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         if name not in dic:
             return True
         value = dic[name]
@@ -75,10 +75,10 @@ class Length(Rule):
 class Range(Rule):
     expr = "range"
 
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         return expr.startswith(self.expr)
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         if name not in dic:
             return True
         value = dic[name]
@@ -98,10 +98,10 @@ class Range(Rule):
 class DateTime(Rule):
     expr = "datetime"
 
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         return expr.startswith(self.expr)
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         if name not in dic:
             return True
         value = dic[name]
@@ -119,10 +119,10 @@ class DateTime(Rule):
 class Regexp(Rule):
     expr = "regexp"
 
-    def know(self, expr):
+    def know(self, expr: str) -> bool:
         return expr.startswith(self.expr)
 
-    def check(self, expr, dic, name):
+    def check(self, expr: str, dic: dict, name: str) -> bool:
         if name not in dic:
             return True
         value = dic[name]

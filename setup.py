@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
     setup(
         name="paramrule",
-        version="0.1.0",
+        version="0.1.1",
         description=(
             "Python parameter verification tool class."
         ),
